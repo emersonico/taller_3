@@ -76,6 +76,9 @@
     (expresion ("(" expresion primitiva-binaria expresion ")") primapp-bin-exp) ; Aplicación de primitiva binaria
     (expresion (primitiva-unaria "(" expresion ")") primapp-un-exp) ; Aplicación de primitiva unaria
 
+    (expresion ("Si" expresion "entonces" expresion "sino" expresion "finSI") condicional-exp) ;CONDICIONALES
+
+    
     (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
     (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
     (primitiva-binaria ("*") primitiva-multi)       ; Primitiva de multiplicación
@@ -189,6 +192,13 @@
       (primapp-un-exp (prim-unaria exp1)            ; Aplicación de primitiva unaria
         (let ((v (eval-expresion exp1 env)))        ; Evalúa el operando
           (apply-primitiva-unaria prim-unaria v)))  ; Aplica la primitiva
+
+
+      (condicional-exp (test-exp true-exp false-exp)
+        (if (valor-verdad? (eval-expresion test-exp env)) ; Verifica la condición
+            (eval-expresion true-exp env) ; Si es verdadera, evalúa la rama "entonces"
+            (eval-expresion false-exp env))) ; Si es falsa, evalúa la rama "sino"
+
       (else (eopl:error 'eval-expresion "Expresión no implementada: ~s" exp)))))
 
 
