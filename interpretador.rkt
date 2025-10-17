@@ -83,6 +83,10 @@
     ;Declarar procedimientos
     (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc") procedimiento-exp) ;
 
+    ;Evaluacion de procesimiendos
+    (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval") app-exp)
+
+    
     (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
     (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
     (primitiva-binaria ("*") primitiva-multi)       ; Primitiva de multiplicación
@@ -184,6 +188,18 @@
     (amb environment?)))           ; Ambiente donde se definió
 
 
+(define apply-procedure
+  (lambda (proc args)
+    (cases procVal proc
+      (cerradura (params cuerpo env)
+        (if (= (length params) (length args))
+            (eval-expresion cuerpo (extended-env params args env))
+            (eopl:error 'apply-procedure
+                        "Número incorrecto de argumentos: esperaba ~s, recibió ~s"
+                        (length params) (length args)))))))
+
+
+
 ;========================
 ; FUNCIÓN PRINCIPAL
 ;========================
@@ -234,6 +250,16 @@
       ;Esto no ejecuta el cuerpo, solo crea la cerradura (el valor del procedimiento).
       (procedimiento-exp (ids cuerpo)
         (cerradura ids cuerpo env))
+
+
+      ;evaluacion de procedimiento
+      (app-exp (rator rands)
+        (let ((proc (eval-expresion rator env))
+            (args (eval-rands rands env)))
+         (if (procVal? proc)
+            (apply-procedure proc args)
+            (eopl:error 'eval-expresion
+                    "Intento de aplicar algo que no es un procedimiento: ~s" proc))))
 
       
 
