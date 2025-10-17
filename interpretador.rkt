@@ -86,6 +86,11 @@
     ;Evaluacion de procesimiendos
     (expresion ("evaluar" expresion "(" (separated-list expresion ",") ")" "finEval") app-exp)
 
+    ;Recursividad
+    (expresion ("funcionRec" (arbno identificador "(" (separated-list identificador ",") ")" "=" expresion) 
+               "haga" expresion "finRec")
+               recursivo-exp)
+
     
     (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
     (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
@@ -125,29 +130,46 @@
 ; define-datatype environment: Define la estructura de datos para los ambientes
 (define-datatype environment environment?
   (empty-env)                                       ; Ambiente vacío
+
   (extended-env                                     ; Ambiente extendido
-   (vars list?)                                     ; Lista de identificadores
+   (vars (list-of symbol?))                         ; Lista de identificadores
    (vals list?)                                     ; Lista de valores correspondientes
-   (env environment?)))                             ; Ambiente padre
+   (env environment?))                              ; Ambiente padre
+
+  (recursively-extended-env                         ; Ambiente para funciones recursivas
+   (proc-names (list-of symbol?))                   ; Nombres de los procedimientos
+   (idss (list-of (list-of symbol?)))               ; Parámetros de cada procedimiento
+   (bodies (list-of expresion?))                    ; Cuerpo de cada procedimiento
+   (env environment?)))                             ; Ambiente base
 
 ; apply-env: environment × symbol -> value
 ; Busca el valor asociado a un identificador en el ambiente
 (define apply-env
   (lambda (env search-var)
     (cases environment env
-      (empty-env ()                                 ; Si el ambiente está vacío
+      (empty-env ()
         (eopl:error 'apply-env "Variable no definida: ~s" search-var))
-      (extended-env (vars vals old-env)             ; Si el ambiente está extendido
-        (letrec 
-            ((loop (lambda (vars vals)              ; Función auxiliar para buscar en las listas
-                     (cond
-                       ((null? vars)                ; Si no se encuentra en este nivel
-                        (apply-env old-env search-var)) ; Buscar en el ambiente padre
-                       ((eqv? (car vars) search-var) ; Si se encuentra la variable
-                        (car vals))
-                       (else                        ; Continuar buscando
-                        (loop (cdr vars) (cdr vals)))))))
-          (loop vars vals))))))
+
+      (extended-env (vars vals old-env)
+        (let ((pos (list-find-position search-var vars)))
+          (if (number? pos)
+              (list-ref vals pos)
+              (apply-env old-env search-var))))
+
+      (recursively-extended-env (proc-names idss bodies old-env)
+        (let ((pos (list-find-position search-var proc-names)))
+          (if (number? pos)
+              ;; devuelve una cerradura (función recursiva)
+              (cerradura (list-ref idss pos)
+                         (list-ref bodies pos)
+                         env)
+              (apply-env old-env search-var)))))))
+
+
+; extend-env-recursively: crea un ambiente recursivo
+(define extend-env-recursively
+  (lambda (proc-names idss bodies env)
+    (recursively-extended-env proc-names idss bodies env)))
 
 ; init-env: -> environment
 ; Crea el ambiente inicial con algunas variables predefinidas
@@ -176,6 +198,19 @@
         '()
         (cons (eval-expresion (car rands) env)
               (eval-rands (cdr rands) env)))))
+
+(define list-find-position
+  (lambda (sym los)
+    (list-index (lambda (sym1) (eqv? sym1 sym)) los)))
+
+(define list-index
+  (lambda (pred ls)
+    (cond
+      ((null? ls) #f)
+      ((pred (car ls)) 0)
+      (else
+       (let ((r (list-index pred (cdr ls))))
+         (if (number? r) (+ r 1) #f))))))
 
 
 ;; ========================================
@@ -260,6 +295,14 @@
             (apply-procedure proc args)
             (eopl:error 'eval-expresion
                     "Intento de aplicar algo que no es un procedimiento: ~s" proc))))
+
+
+      ;expresión recursiva (letrec / funcionRec)
+      (recursivo-exp (proc-names idss cuerpos letrec-body)
+        (eval-expresion
+          letrec-body
+          (extend-env-recursively proc-names idss cuerpos env)))
+
 
       
 
