@@ -37,3 +37,29 @@
     ;; números: enteros y decimales, positivos o negativos
     (numero ("-"? digit (arbno digit) ("." digit (arbno digit))?) number) ; Reconoce números con/sin signo y decimales
     ))
+
+
+;========================
+; ESPECIFICACIÓN SINTÁCTICA
+;========================
+
+(define grammar-simple-interpreter
+  '((programa (expresion) un-programa)              ; Un programa consiste en una expresión
+
+    (expresion (numero) numero-lit)                 ; Expresión numérica literal
+    (expresion (string) texto-lit)                  ; Expresión de texto literal
+    (expresion (identificador) var-exp)             ; Expresión de variable
+
+    (expresion ("(" expresion primitiva-binaria expresion ")") primapp-bin-exp) ; Aplicación de primitiva binaria
+    (expresion (primitiva-unaria "(" expresion ")") primapp-un-exp) ; Aplicación de primitiva unaria
+
+    (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
+    (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
+    (primitiva-binaria ("*") primitiva-multi)       ; Primitiva de multiplicación
+    (primitiva-binaria ("/") primitiva-div)         ; Primitiva de división
+    (primitiva-binaria ("concat") primitiva-concat) ; Primitiva de concatenación
+
+    (primitiva-unaria ("longitud") primitiva-longitud) ; Primitiva de longitud de cadena
+    (primitiva-unaria ("add1") primitiva-add1)      ; Primitiva de incremento
+    (primitiva-unaria ("sub1") primitiva-sub1)      ; Primitiva de decremento
+  ))
