@@ -160,3 +160,47 @@
         (let ((v (eval-expresion exp1 env)))        ; Evalúa el operando
           (apply-primitiva-unaria prim-unaria v)))  ; Aplica la primitiva
       (else (eopl:error 'eval-expresion "Expresión no implementada: ~s" exp)))))
+
+
+;========================
+; PRIMITIVAS BINARIAS
+;========================
+
+; apply-primitiva-binaria: primitiva-binaria × value × value -> value
+; Aplica una primitiva binaria a dos valores y retorna el resultado
+(define apply-primitiva-binaria
+  (lambda (prim a b)
+    (cases primitiva-binaria prim
+      (primitiva-suma () (+ a b))                   ; Suma aritmética
+      (primitiva-resta () (- a b))                  ; Resta aritmética
+      (primitiva-multi () (* a b))                  ; Multiplicación aritmética
+      (primitiva-div ()                             ; División aritmética con verificación
+        (if (zero? b)
+            (eopl:error 'apply-primitiva-binaria "División por cero")
+            (/ a b)))
+      (primitiva-concat ()                          ; Concatenación de cadenas
+        (if (and (string? a) (string? b))
+            (string-append a b)
+            (eopl:error 'apply-primitiva-binaria "concat espera dos cadenas, recibió: ~s y ~s" a b))))))
+
+;========================
+; PRIMITIVAS UNARIAS
+;========================
+
+; apply-primitiva-unaria: primitiva-unaria × value -> value
+; Aplica una primitiva unaria a un valor y retorna el resultado
+(define apply-primitiva-unaria
+  (lambda (prim v)
+    (cases primitiva-unaria prim
+      (primitiva-longitud ()                        ; Longitud de cadena
+        (if (string? v)
+            (string-length v)
+            (eopl:error 'apply-primitiva-unaria "longitud espera una cadena, recibió: ~s" v)))
+      (primitiva-add1 ()                            ; Incremento en 1
+        (if (number? v)
+            (+ v 1)
+            (eopl:error 'apply-primitiva-unaria "add1 espera un número, recibió: ~s" v)))
+      (primitiva-sub1 ()                            ; Decremento en 1
+        (if (number? v)
+            (- v 1)
+            (eopl:error 'apply-primitiva-unaria "sub1 espera un número, recibió: ~s" v))))))
