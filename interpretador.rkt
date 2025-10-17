@@ -148,6 +148,13 @@
      (empty-env))))                                 ; Ambiente base vacío
 
 
+;; buscar-variable: symbol × environment → value
+;; Busca un identificador en el ambiente y retorna su valor
+;; Si no encuentra la variable, genera un error descriptivo
+(define buscar-variable
+  (lambda (id env)
+    (apply-env env id)))
+
 ;========================
 ; FUNCIÓN PRINCIPAL
 ;========================
