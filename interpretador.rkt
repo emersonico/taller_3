@@ -235,6 +235,17 @@
             (- v 1)
             (eopl:error 'apply-primitiva-unaria "sub1 espera un número, recibió: ~s" v))))))
 
+
+;========================
+; BOOLEANOS 
+;========================
+
+(define valor-verdad?
+  (lambda (val)
+    (cond
+      [(number? val) (not (zero? val))]    ; 0 → falso, otros números → verdadero
+      [else #t])))                         ; No números → siempre verdadero
+
 ;========================
 ; INTERFAZ DEL INTÉRPRETE
 ;========================
