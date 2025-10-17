@@ -80,7 +80,9 @@
 
     (expresion ("declarar" "(" (separated-list identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp) ; Esto permtite declarar una o varias varibales locales anres del cuerpo
 
-    
+    ;Declarar procedimientos
+    (expresion ("procedimiento" "(" (separated-list identificador ",") ")" "haga" expresion "finProc") procedimiento-exp) ;
+
     (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
     (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
     (primitiva-binaria ("*") primitiva-multi)       ; Primitiva de multiplicación
@@ -172,6 +174,16 @@
               (eval-rands (cdr rands) env)))))
 
 
+;; ========================================
+;; Tipo de dato para representar procedimientos (cerraduras)
+;; ========================================
+(define-datatype procVal procVal?
+  (cerradura
+    (lista-ID (list-of symbol?))   ; Parámetros
+    (exp expresion?)               ; Cuerpo del procedimiento
+    (amb environment?)))           ; Ambiente donde se definió
+
+
 ;========================
 ; FUNCIÓN PRINCIPAL
 ;========================
@@ -218,6 +230,12 @@
           (eval-expresion cuerpo 
                           (extended-env ids args env)))) ;crea un nuevo ambiente extendido y evalua el cuerpo
 
+      ;declara procedimientos
+      ;Esto no ejecuta el cuerpo, solo crea la cerradura (el valor del procedimiento).
+      (procedimiento-exp (ids cuerpo)
+        (cerradura ids cuerpo env))
+
+      
 
       (else (eopl:error 'eval-expresion "Expresión no implementada: ~s" exp)))))
 
