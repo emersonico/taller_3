@@ -179,7 +179,7 @@
       (numero-lit (num) num)                        ; Los números se evalúan a sí mismos
       (texto-lit (txt) txt)                         ; Los textos se evalúan a sí mismos
       (var-exp (id)                                 ; Las variables se buscan en el ambiente
-        (apply-env env id))
+        (buscar-variable env id))
       
       (primapp-bin-exp (exp1 prim-binaria exp2)     ; Aplicación de primitiva binaria
         (let ((v1 (eval-expresion exp1 env))        ; Evalúa el primer operando
