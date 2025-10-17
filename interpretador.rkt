@@ -78,6 +78,8 @@
 
     (expresion ("Si" expresion "entonces" expresion "sino" expresion "finSI") condicional-exp) ;CONDICIONALES
 
+    (expresion ("declarar" "(" (separated-list identificador "=" expresion ";") ")" "{" expresion "}") variableLocal-exp) ; Esto permtite declarar una o varias varibales locales anres del cuerpo
+
     
     (primitiva-binaria ("+") primitiva-suma)        ; Primitiva de suma
     (primitiva-binaria ("~") primitiva-resta)       ; Primitiva de resta
@@ -159,6 +161,18 @@
     (apply-env env id)))
 
 ;========================
+; Función auxiliar para evaluar listas de expresiones
+;========================
+
+(define eval-rands
+  (lambda (rands env)
+    (if (null? rands)
+        '()
+        (cons (eval-expresion (car rands) env)
+              (eval-rands (cdr rands) env)))))
+
+
+;========================
 ; FUNCIÓN PRINCIPAL
 ;========================
 
@@ -198,6 +212,12 @@
         (if (valor-verdad? (eval-expresion test-exp env)) ; Verifica la condición
             (eval-expresion true-exp env) ; Si es verdadera, evalúa la rama "entonces"
             (eval-expresion false-exp env))) ; Si es falsa, evalúa la rama "sino"
+
+      (variableLocal-exp (ids exps cuerpo)
+        (let ((args (eval-rands exps env))) ;evalua las variables locales
+          (eval-expresion cuerpo 
+                          (extended-env ids args env)))) ;crea un nuevo ambiente extendido y evalua el cuerpo
+
 
       (else (eopl:error 'eval-expresion "Expresión no implementada: ~s" exp)))))
 
