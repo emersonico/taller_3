@@ -28,15 +28,38 @@
 ;=======================
 
 (define scanner-spec-simple-interpreter
-  '((white-sp (whitespace) skip)                    ; Omite espacios en blanco
-    (comentario ("//" (arbno (not #\newline))) skip) ; Omite comentarios de una línea
-    ;; texto entre comillas dobles: "hola mundo"
-    (string ("\"" (arbno (not #\")) "\"") string)   ; Reconoce cadenas entre comillas
-    ;; identificadores que comienzan con @
-    (identificador ("@" (arbno (or letter digit "-" "_"))) symbol) ; Reconoce variables que empiezan con @
-    ;; números: enteros y decimales, positivos o negativos
-    (numero ("-"? digit (arbno digit) ("." digit (arbno digit))?) number) ; Reconoce números con/sin signo y decimales
-    ))
+  '((white-sp
+      (whitespace) skip)
+
+    (comentario
+      ("//" (arbno (not #\newline))) skip)
+
+    ;; Cadenas de texto entre comillas
+    (string
+      ("\"" (arbno (not #\")) "\"") string)
+
+    ;; Identificadores que comienzan con @ (por ejemplo: @x, @edad)
+    (identificador
+      ("@" letter (arbno (or letter digit "-" "_"))) symbol)
+
+    ;; Números enteros positivos
+    (numero
+      (digit (arbno digit)) number)
+
+    ;; Números enteros negativos
+    (numero
+      ("-" digit (arbno digit)) number)
+
+    ;; Números decimales positivos
+    (numero
+      (digit (arbno digit) "." digit (arbno digit)) number)
+
+    ;; Números decimales negativos
+    (numero
+      ("-" digit (arbno digit) "." digit (arbno digit)) number)
+  ))
+
+
 
 
 ;========================
@@ -204,3 +227,21 @@
         (if (number? v)
             (- v 1)
             (eopl:error 'apply-primitiva-unaria "sub1 espera un número, recibió: ~s" v))))))
+
+;========================
+; INTERFAZ DEL INTÉRPRETE
+;========================
+; interpretador: -> void
+; Inicia un bucle de lectura-evaluación-impresión (REPL) para el lenguaje
+(define interpretador
+  (sllgen:make-rep-loop
+   "--> "                                           ; Prompt para el usuario
+   (lambda (pgm) (eval-program pgm))               ; Función que evalúa el programa
+   (sllgen:make-stream-parser                      ; Parser para entrada en stream
+    scanner-spec-simple-interpreter
+    grammar-simple-interpreter)))
+
+;========================
+; INICIAR INTÉRPRETE
+;========================
+(interpretador)
