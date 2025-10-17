@@ -143,8 +143,8 @@
 (define init-env
   (lambda ()
     (extended-env
-     '(@x @y @z @mensaje @pi)                       ; Identificadores predefinidos
-     (list 10 20 30 "Hola mundo" 3.1416)           ; Valores correspondientes
+     '(@a @b @c @d @e)                             ; Identificadores requeridos por el ejercicio
+     (list 1 2 3 "hola" "FLP")                     ; Valores correspondientes requeridos
      (empty-env))))                                 ; Ambiente base vacío
 
 
