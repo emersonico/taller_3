@@ -63,3 +63,23 @@
     (primitiva-unaria ("add1") primitiva-add1)      ; Primitiva de incremento
     (primitiva-unaria ("sub1") primitiva-sub1)      ; Primitiva de decremento
   ))
+
+;========================
+; CREACIÓN DE DATATYPES
+;========================
+; Genera automáticamente los tipos de datos para la sintaxis abstracta del lenguaje
+(sllgen:make-define-datatypes scanner-spec-simple-interpreter grammar-simple-interpreter)
+
+;========================
+; PARSER Y SCANNER
+;========================
+
+; scan&parse: string -> programa
+; Convierte una cadena de texto en un árbol de sintaxis abstracta del programa
+(define scan&parse
+  (sllgen:make-string-parser scanner-spec-simple-interpreter grammar-simple-interpreter))
+
+; just-scan: string -> lista-de-tokens  
+; Realiza solo el análisis léxico de una cadena, devolviendo una lista de tokens
+(define just-scan
+  (sllgen:make-string-scanner scanner-spec-simple-interpreter grammar-simple-interpreter))
