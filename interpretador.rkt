@@ -3,7 +3,7 @@
 ; ******************************************************************
 ; ESTUDIANTE: Emerson Albornoz Suárez
 ; CÓDIGO: 2517160-3743
-; REPOSITORIO: [URL de tu repositorio GitHub aquí]
+; REPOSITORIO: https://github.com/emersonico/taller_3.git
 ; 
 ; ******************************************************************
 
