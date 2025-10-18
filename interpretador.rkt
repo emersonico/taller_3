@@ -1,4 +1,12 @@
 #lang eopl
+
+; ******************************************************************
+; ESTUDIANTE: Emerson Albornoz Suárez
+; CÓDIGO: 2517160-3743
+; REPOSITORIO: [URL de tu repositorio GitHub aquí]
+; 
+; ******************************************************************
+
 ;; La definición BNF para las expresiones del lenguaje:
 ;;
 ;;  <program>       ::= <expresion>
@@ -35,7 +43,7 @@
       ("//" (arbno (not #\newline))) skip)
 
     ;; Cadenas de texto entre comillas
-    (string
+    (texto
       ("\"" (arbno (not #\")) "\"") string)
 
     ;; Identificadores que comienzan con @ (por ejemplo: @x, @edad)
@@ -70,7 +78,7 @@
   '((programa (expresion) un-programa)              ; Un programa consiste en una expresión
 
     (expresion (numero) numero-lit)                 ; Expresión numérica literal
-    (expresion (string) texto-lit)                  ; Expresión de texto literal
+    (expresion (texto) texto-lit)                  ; Expresión de texto literal
     (expresion (identificador) var-exp)             ; Expresión de variable
 
     (expresion ("(" expresion primitiva-binaria expresion ")") primapp-bin-exp) ; Aplicación de primitiva binaria
@@ -380,3 +388,244 @@
 ; INICIAR INTÉRPRETE
 ;========================
 (interpretador)
+#|
+
+; *****************************************************************************************************************
+;                                    EJERCICIO A – PROCEDIMIENTO AREA CIRCULO
+; *****************************************************************************************************************
+
+;; Procedimiento: areaCirculo
+;; Propósito: Calcula el área de un círculo a partir del radio proporcionado
+;; Parámetros: 
+;;    @radio: Número que representa el radio del círculo (puede ser decimal)
+;; Retorna: Área del círculo usando la fórmula A = π * r * r, con π aproximado a 3.1416
+
+; Ejemplo 1: Cálculo del área con radio = 1.2
+; Resultado esperado: aproximadamente 4.52
+declarar (
+    @radio = 1.2;
+    @areaCirculo = procedimiento(@r) haga ((3.1416 * @r) * @r) finProc
+) {
+    evaluar @areaCirculo(@radio) finEval
+}
+
+; Ejemplo 2: Cálculo del área con radio = 4.7  
+; Resultado esperado: aproximadamente 69.38
+declarar (
+    @radio = 4.7;
+    @areaCirculo = procedimiento(@r) haga ((3.1416 * @r) * @r) finProc
+) {
+    evaluar @areaCirculo(@radio) finEval
+}
+
+; Ejemplo 3: Cálculo del área con radio = 0.5
+; Resultado esperado: aproximadamente 0.785
+declarar (
+    @radio = 0.5;
+    @areaCirculo = procedimiento(@r) haga ((3.1416 * @r) * @r) finProc
+) {
+    evaluar @areaCirculo(@radio) finEval
+}
+
+
+; *****************************************************************************************************************
+;                                     EJERCICIO B – PROCEDIMIENTO FACTORIAL
+; *****************************************************************************************************************
+
+;; Procedimiento: factorial  
+;; Propósito: Calcula el factorial de un número entero no negativo (@n) usando recursión
+;; Entrada: @n (entero >= 0)
+;; Salida: factorial de @n
+
+; Ejemplo 1: Cálculo del factorial de 5 (5! = 120)
+funcionRec
+       @factorial(@n) = 
+          Si @n 
+             entonces (@n * evaluar @factorial (sub1(@n)) finEval)
+             sino 1 finSI
+       haga
+          evaluar @factorial (5) finEval
+finRec
+
+; Ejemplo 2: Cálculo del factorial de 7 (7! = 5040)
+funcionRec
+       @factorial(@n) = 
+          Si @n 
+             entonces (@n * evaluar @factorial (sub1(@n)) finEval)
+             sino 1 finSI
+       haga
+          evaluar @factorial (7) finEval
+finRec
+
+; Ejemplo 3: Cálculo del factorial de 12 (12! = 479001600)
+funcionRec
+       @factorial(@n) = 
+          Si @n 
+             entonces (@n * evaluar @factorial (sub1(@n)) finEval)
+             sino 1 finSI
+       haga
+          evaluar @factorial (12) finEval
+finRec
+
+
+; *****************************************************************************************************************
+;                                     EJERCICIO C – SUMA RECURSIVA
+; *****************************************************************************************************************
+
+;; Procedimiento: sumar
+;; Propósito: Calcula la suma de dos números enteros utilizando recursión y las funciones add1 y sub1
+;; Entradas: 
+;;   @x: Primer número entero
+;;   @y: Segundo número entero  
+;; Salida: La suma de @x y @y
+
+; Ejemplo 1: Suma de 4 y 5 (resultado = 9)
+funcionRec
+      @sumar(@x,@y) = 
+         Si @x 
+            entonces evaluar @sumar (sub1(@x), add1(@y)) finEval
+            sino @y finSI
+      haga
+         evaluar @sumar (4,5) finEval
+finRec
+
+; Ejemplo 2: Suma de 3 y 7 (resultado = 10)
+funcionRec
+      @sumar(@x,@y) = 
+         Si @x 
+            entonces evaluar @sumar (sub1(@x), add1(@y)) finEval
+            sino @y finSI
+      haga
+         evaluar @sumar (3,7) finEval
+finRec
+
+; Ejemplo 3: Suma de 10 y 15 (resultado = 25)
+funcionRec
+      @sumar(@x,@y) = 
+         Si @x 
+            entonces evaluar @sumar (sub1(@x), add1(@y)) finEval
+            sino @y finSI
+      haga
+         evaluar @sumar (10,15) finEval
+finRec
+
+
+; *****************************************************************************************************************
+;                                     EJERCICIO D – RESTA Y MULTIPLICACIÓN RECURSIVA
+; *****************************************************************************************************************
+
+;; Procedimiento: restar
+;; Propósito: Calcula la resta de dos números enteros usando recursión y las funciones add1 y sub1
+;; Entradas: 
+;;   @x: Primer número entero (minuendo)
+;;   @y: Segundo número entero (sustraendo)
+;; Salida: La resta de @x y @y
+
+; Ejemplo 1: Resta de 7 y 2 (resultado = 5)
+funcionRec
+      @restar(@x,@y) = Si @y entonces evaluar @restar(sub1(@x),sub1(@y)) finEval sino @x finSI
+      @sumar(@a,@b) = Si @a entonces evaluar @sumar(sub1(@a),add1(@b)) finEval sino @b finSI
+      @multiplicar(@c,@d) = Si @d entonces evaluar @sumar(@c,evaluar @multiplicar(@c,sub1(@d)) finEval) finEval sino 0 finSI
+      haga
+         evaluar @restar(7,2) finEval
+finRec
+
+; Ejemplo 2: Resta de 4 y 9 (resultado = -5)
+funcionRec
+      @restar(@x,@y) = Si @y entonces evaluar @restar(sub1(@x),sub1(@y)) finEval sino @x finSI
+      @sumar(@a,@b) = Si @a entonces evaluar @sumar(sub1(@a),add1(@b)) finEval sino @b finSI
+      @multiplicar(@c,@d) = Si @d entonces evaluar @sumar(@c,evaluar @multiplicar(@c,sub1(@d)) finEval) finEval sino 0 finSI
+      haga
+         evaluar @restar(4,9) finEval
+finRec
+
+;; Procedimiento: multiplicar
+;; Propósito: Calcula el producto de dos números enteros usando recursión y las funciones add1 y sub1
+;; Entradas: 
+;;   @c: Primer número entero (multiplicando)
+;;   @d: Segundo número entero (multiplicador)
+;; Salida: El producto de @c y @d
+
+; Ejemplo 1: Multiplicación de 6 y 4 (resultado = 24)
+funcionRec
+      @restar(@x,@y) = Si @y entonces evaluar @restar(sub1(@x),sub1(@y)) finEval sino @x finSI
+      @sumar(@a,@b) = Si @a entonces evaluar @sumar(sub1(@a),add1(@b)) finEval sino @b finSI
+      @multiplicar(@c,@d) = Si @d entonces evaluar @sumar(@c,evaluar @multiplicar(@c,sub1(@d)) finEval) finEval sino 0 finSI
+      haga
+         evaluar @multiplicar(6,4) finEval
+finRec
+
+; Ejemplo 2: Multiplicación de 8 y 7 (resultado = 56)
+funcionRec
+      @restar(@x,@y) = Si @y entonces evaluar @restar(sub1(@x),sub1(@y)) finEval sino @x finSI
+      @sumar(@a,@b) = Si @a entonces evaluar @sumar(sub1(@a),add1(@b)) finEval sino @b finSI
+      @multiplicar(@c,@d) = Si @d entonces evaluar @sumar(@c,evaluar @multiplicar(@c,sub1(@d)) finEval) finEval sino 0 finSI
+      haga
+         evaluar @multiplicar(8,7) finEval
+finRec
+
+
+; *****************************************************************************************************************
+;                                     EJERCICIO E – INTEGRANTES Y DECORADOR BÁSICO
+; *****************************************************************************************************************
+
+;; Procedimiento: @integrantes
+;; Propósito: Devuelve los nombres de los integrantes del grupo
+;; Entradas: Ninguna
+;; Salida: String con los nombres de los integrantes
+
+;; Procedimiento: @saludar  
+;; Propósito: Saluda a los integrantes usando una función que devuelve los nombres
+;; Entradas: @funcion - función que retorna los nombres de los integrantes
+;; Salida: Saludo concatenado con los nombres
+
+;; Procedimiento: @decorate
+;; Propósito: Invoca el saludo y permite agregar un mensaje adicional
+;; Entradas: Ninguna
+;; Salida: Texto con el saludo final
+
+; Declaración de procedimientos y ejecución del saludo básico
+declarar (
+    @integrantes = procedimiento () haga "Emerson Albornoz Suárez" finProc;
+    @saludar = procedimiento (@funcion) haga ("Hola: " concat evaluar @funcion () finEval) finProc
+) {
+    declarar (
+        @decorate = procedimiento () haga evaluar @saludar (@integrantes) finEval finProc
+    ) {
+        evaluar @decorate () finEval
+    }
+}
+
+
+; *****************************************************************************************************************
+;                                     EJERCICIO F – DECORADOR CON MENSAJE ADICIONAL
+; *****************************************************************************************************************
+
+;; Procedimiento: @integrantes
+;; Propósito: Devuelve los nombres de los integrantes del grupo  
+;; Entradas: Ninguna
+;; Salida: String con los nombres de los integrantes
+
+;; Procedimiento: @saludar
+;; Propósito: Saluda a los integrantes usando una función que devuelve los nombres
+;; Entradas: @funcion - función que retorna los nombres de los integrantes  
+;; Salida: Saludo concatenado con los nombres
+
+;; Procedimiento: @decorate
+;; Propósito: Invoca el saludo y agrega un mensaje adicional al final
+;; Entradas: @var - texto a agregar al saludo
+;; Salida: Texto con el saludo final y el mensaje adicional
+
+; Declaración de procedimientos y ejecución del saludo con mensaje adicional
+declarar (
+    @integrantes = procedimiento () haga "Emerson Albornoz Suárez" finProc;
+    @saludar = procedimiento (@funcion) haga ("Hola: " concat evaluar @funcion () finEval) finProc
+) {
+    declarar (
+        @decorate = procedimiento (@var) haga (evaluar @saludar (@integrantes) finEval concat @var) finProc
+    ) {
+        evaluar @decorate ("-EstudianteFLP") finEval
+    }
+}
+
+|#
